@@ -13,4 +13,4 @@ An earlier run passed each functional check but failed its final source-integrit
 
 Root Replit commands enter src/ before installation, build and startup. This GitHub update was not redeployed to Replit; exact parity with the currently deployed source was not independently established. Prior V4 visual checks are historical, documented in src/submission/VALIDATION.md. Physical devices, fresh Linux deployment and real channel replay behavior were not retested in this update.
 
-Formal PDFs, proof-of-use PDFs, public pitch video and slide link remain pending. Public visibility and designated collaborator access are separate submission requirements; collaborator access has not been verified here.
+The RunPod proof-of-use PDF has been assembled from five original screenshots and visually checked. The formal proposal, technical declaration, Replit proof PDF, public pitch video and slide link remain pending. Public visibility and designated collaborator access are separate submission requirements; collaborator access has not been verified here.
