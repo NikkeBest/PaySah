@@ -13,7 +13,7 @@ Receipt verification for Malaysian small businesses: compare receipt details wit
 ## Links
 
 - [Live demo](https://paysah.replit.app/#orders)
-- [GitHub repository](https://github.com/Moyu0717/PaySah)
+- [GitHub repository](https://github.com/UTeMkuCemerlang/PaySah)
 - Public pitch video: pending completion.
 - Slide deck: pending final link.
 - [Submission files and remaining items](submission/README.md)
@@ -57,7 +57,7 @@ The two formal PDFs will be added to submission/ when finalized. The organizer t
 Requirements: Node.js 24, npm and PostgreSQL 17 for the local helper. Run application commands from **src/**.
 
 ```powershell
-git clone https://github.com/Moyu0717/PaySah.git
+git clone https://github.com/UTeMkuCemerlang/PaySah.git
 cd PaySah/src
 npm ci
 Copy-Item .env.example .env
