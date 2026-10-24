@@ -15,7 +15,7 @@ Receipt verification for Malaysian small businesses: compare receipt details wit
 - [Live demo](https://paysah.replit.app/#orders)
 - [GitHub repository](https://github.com/UTeMkuCemerlang/PaySah)
 - Public pitch video: pending completion.
-- Slide deck: pending final link.
+- [Slide deck](PaySah-Town.pdf)
 - [Submission files and remaining items](submission/README.md)
 
 ## What it does
