@@ -1,0 +1,713 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>PaySah Town</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Manrope:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: isometric diorama (fixed WebGL, orthographic) fills the screen; one glass chapter panel at a time on the left (desktop) or bottom (phone); a 7-step rail pinned at the bottom shows where we are in the flow. Single warm-daylight look with a dusk moment. */
+:root{
+  --sky-a:#e8ecee; --sky-b:#cfd8dc;          /* daylight ground */
+  --ink:#2a2420; --ink-soft:#5e554c;          /* text on light glass */
+  --brand:#1f7a5a;                             /* PaySah green: verified, primary */
+  --amber:#d9822b;                             /* attention / Owner */
+  --coral:#c8553d;                             /* blocked */
+  --glass:rgba(255,253,249,.72);
+  --line:rgba(255,255,255,.85);
+  --f-display:"Sora","Noto Sans SC",system-ui,sans-serif;
+  --f-body:"Manrope","Noto Sans SC",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+html{background:var(--sky-b)}
+body{background:radial-gradient(120% 90% at 60% 20%,#f6f7f6,var(--sky-a) 45%,var(--sky-b));color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;overflow-x:hidden}
+html[data-l="en"] .zh,html[data-l="zh"] .en{display:none!important}
+html[data-l="zh"] body{font-family:"Noto Sans SC",var(--f-body)}
+#stage{position:fixed;inset:0;z-index:1;width:100%;height:100%;display:block}
+#night{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;background:radial-gradient(120% 90% at 60% 20%,#3b4466,#1d2238 60%,#141829)}
+#veil{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0;background:radial-gradient(90% 80% at 62% 45%,rgba(255,255,255,.55),rgba(236,239,240,.78));-webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px)}
+#close{position:fixed;inset:0;z-index:2;width:100%;height:100%;display:block;pointer-events:none}
+#labels{position:fixed;inset:0;z-index:2;pointer-events:none}
+.lbl{position:absolute;left:0;top:0;transform:translate(-50%,-100%);white-space:nowrap;display:flex;align-items:center;gap:6px;
+  padding:5px 10px 5px 6px;border-radius:999px;font:600 12px var(--f-body);color:var(--ink);
+  background:rgba(255,255,255,.88);box-shadow:0 6px 18px rgba(60,48,36,.18);border:1px solid #fff;transition:opacity .35s}
+.lbl::after{content:"";position:absolute;left:50%;bottom:-7px;width:2px;height:7px;margin-left:-1px;background:rgba(255,255,255,.9)}
+.stem{position:absolute;left:0;top:0;height:2px;margin-top:-1px;transform-origin:0 50%;background:rgba(255,255,255,.95);box-shadow:0 1px 4px rgba(60,48,36,.25);border-radius:2px;opacity:0;transition:opacity .35s}
+.lbl i{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:10px;color:#fff;background:var(--brand)}
+.lbl.amber i{background:var(--amber)}.lbl.dark i{background:#3a342f}.lbl.blue i{background:#2aabee}.lbl.purple i{background:#7248b9}
+
+.glass{background:linear-gradient(150deg,rgba(255,255,255,.85),rgba(255,255,255,.55));-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);
+  border:1px solid var(--line);box-shadow:0 20px 50px rgba(70,56,40,.16),inset 0 1px 0 #fff}
+
+header.bar{position:fixed;top:0;left:0;right:0;z-index:6;display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:calc(14px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px))}
+.logo{display:flex;align-items:center;gap:9px;padding:6px 14px 6px 6px;border-radius:999px;font:700 17px var(--f-display);letter-spacing:-.01em}
+.logo i{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:12px;color:#fff;background:var(--brand)}
+.bar nav{display:flex;align-items:center;gap:6px;padding:4px;border-radius:999px}
+.lang button{all:unset;cursor:pointer;padding:7px 12px;border-radius:999px;font:500 12px var(--f-mono);color:var(--ink-soft)}
+.lang button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:700;font-size:14px;color:#fff;background:var(--brand);padding:9px 16px;border-radius:999px}
+.btn.ghost{background:rgba(255,255,255,.7);color:var(--ink);border:1px solid #fff}
+.lang button:focus-visible,.btn:focus-visible,.rail a:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+main{position:relative;z-index:3}
+section.ch{min-height:110vh;display:flex;align-items:center;padding-block:100px 150px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.panel{width:min(420px,100%);margin-left:clamp(0px,3vw,48px);box-sizing:border-box;padding:24px 24px 20px;border-radius:26px;min-width:0}
+.step{display:flex;align-items:center;gap:10px;font:500 12px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.step b{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:700 14px var(--f-display);letter-spacing:0;color:#fff;background:var(--brand)}
+.step.amber b{background:var(--amber)}
+h1,h2{font-family:var(--f-display);letter-spacing:-.025em;text-wrap:balance;margin:12px 0 12px}
+h1{font-size:clamp(46px,6.4vw,80px);line-height:.95;font-weight:700}
+@media (min-width:901px){#s0{min-height:100vh;align-items:flex-start;padding-top:calc(96px + env(safe-area-inset-top,0px))}}
+h1 em{font-style:normal;color:var(--brand)}
+h2{font-size:clamp(26px,3vw,34px);line-height:1.12;font-weight:600}
+.lede{font:500 18px/1.45 var(--f-display);margin:0 0 12px}
+p{margin:0 0 12px;color:var(--ink-soft)}
+p strong{color:var(--ink)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.hint{margin-top:18px;font:12px var(--f-mono);letter-spacing:.08em;color:var(--ink-soft)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px}
+.chip{font:500 12px var(--f-mono);padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.75);border:1px solid #fff;color:var(--ink)}
+.chip.ok{background:rgba(31,122,90,.12);color:var(--brand);border-color:rgba(31,122,90,.2)}
+.chip.warn{background:rgba(217,130,43,.14);color:#8a4f12;border-color:rgba(217,130,43,.25)}
+.chip.block{background:rgba(200,85,61,.12);color:#8e3322;border-color:rgba(200,85,61,.22)}
+ul.ck{list-style:none;margin:6px 0 12px;padding:0;display:grid;gap:7px}
+ul.ck li{position:relative;padding-left:26px;color:var(--ink)}
+ul.ck li::before{content:"✓";position:absolute;left:0;top:1px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;background:var(--brand)}
+ul.ck.x li::before{content:"!";background:var(--coral)}
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 12px}
+.mini div{padding:10px 12px;border-radius:16px;background:rgba(255,255,255,.7);border:1px solid #fff}
+.mini span{display:block;font:11px var(--f-mono);color:var(--ink-soft);text-transform:uppercase;letter-spacing:.05em}
+.mini b{font:700 18px var(--f-display)}
+.stack{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 12px}
+.stack div{padding:9px 11px;border-radius:14px;background:rgba(255,255,255,.7);border:1px solid #fff;min-width:0}
+.stack span{display:block;font:500 11px var(--f-mono);color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+.stack p{margin:2px 0 0;color:var(--ink);font-size:13px;line-height:1.35}
+.vals{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 12px}
+.vals div{padding:11px 12px;border-radius:16px;background:rgba(255,255,255,.72);border:1px solid #fff;border-top:3px solid var(--brand);min-width:0}
+.vals .v1{border-top-color:var(--coral)}.vals .v3{border-top-color:var(--amber)}.vals .v4{border-top-color:#3d6fb6}
+.vals b{display:block;font:700 14px var(--f-display);color:var(--ink);margin-bottom:3px}
+.vals p{margin:0;font-size:12.5px;line-height:1.4}
+.chip.xhs{background:rgba(255,36,66,.1);color:#c0162f;border-color:rgba(255,36,66,.22)}.chip.fb{background:rgba(24,119,242,.1);color:#0f5dc4;border-color:rgba(24,119,242,.22)}.chip.ig{background:rgba(193,53,132,.1);color:#9c2468;border-color:rgba(193,53,132,.22)}
+.note{font-size:13px;border-left:3px solid var(--amber);padding-left:10px}
+
+.rail{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:6;display:flex;gap:4px;padding:6px;border-radius:999px;max-width:calc(100% - 32px);overflow-x:auto;scrollbar-width:none}
+.rail a{display:flex;align-items:center;gap:6px;padding:7px 12px 7px 7px;border-radius:999px;text-decoration:none;color:var(--ink-soft);font:600 12px var(--f-body);white-space:nowrap;transition:background .3s,color .3s}
+.rail a b{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font:700 11px var(--f-display);background:rgba(42,36,32,.08);color:var(--ink)}
+.rail a.on{background:var(--ink);color:#fff}
+.rail a.on b{background:#fff;color:var(--ink)}
+.rail a.done b{background:var(--brand);color:#fff}
+footer{position:relative;z-index:3;padding:24px max(16px,env(safe-area-inset-right,0px)) 110px max(16px,env(safe-area-inset-left,0px));font:12px var(--f-mono);color:var(--ink-soft);background:var(--sky-b)}
+
+@media (max-width:900px){
+  section.ch{align-items:flex-end;padding-block:52vh 110px}
+  section.ch:first-of-type{padding-top:46vh}
+  .panel{margin-left:0;padding:18px}
+  .rail a span{display:none}
+  .rail a{padding:6px}
+  .lbl{font-size:11px}
+  .bar .btn{display:none}
+}
+@media (max-width:420px){.mini,.stack,.vals{grid-template-columns:1fr}}
+@media (prefers-reduced-transparency:reduce){.glass{background:#fbf8f3}}
+</style>
+
+<canvas id="stage" aria-hidden="true"></canvas>
+<div id="veil" aria-hidden="true"></div>
+<canvas id="close" aria-hidden="true"></canvas>
+<div id="night" aria-hidden="true"></div>
+<div id="labels" aria-hidden="true"></div>
+
+<header class="bar">
+  <div class="logo glass"><i>₨</i>PaySah</div>
+  <nav class="glass">
+    <div class="lang" role="group" aria-label="Language"><button id="l-en" type="button" aria-pressed="true">EN</button><button id="l-zh" type="button" aria-pressed="false">中文</button></div>
+    <a class="btn" href="https://paysah.replit.app" target="_blank" rel="noopener"><span class="en">Live app</span><span class="zh">打开应用</span> ↗</a>
+  </nav>
+</header>
+
+<nav class="rail glass" aria-label="Steps">
+  <a href="#s1"><b>1</b><span class="en">Pay</span><span class="zh">付款</span></a>
+  <a href="#s2"><b>2</b><span class="en">Send</span><span class="zh">提交截图</span></a>
+  <a href="#s3"><b>3</b><span class="en">AI reads</span><span class="zh">AI 读取</span></a>
+  <a href="#s4"><b>4</b><span class="en">Match</span><span class="zh">比对</span></a>
+  <a href="#s5"><b>5</b><span class="en">Cashier</span><span class="zh">店员确认</span></a>
+  <a href="#s6"><b>6</b><span class="en">Owner</span><span class="zh">店主审批</span></a>
+  <a href="#s7"><b>7</b><span class="en">Release</span><span class="zh">放行</span></a>
+  <a href="#s10" data-c="10"><b>+</b><span class="en">Online sellers</span><span class="zh">网店卖家</span></a>
+  <a href="#s11" data-c="11"><b>★</b><span class="en">Value</span><span class="zh">商业价值</span></a>
+</nav>
+
+<main>
+<section class="ch" id="s0">
+  <div class="panel glass">
+    <div class="step"><span>SDC Hackathon 2026 · Domain 2</span></div>
+    <h1>Pay<em>Sah</em></h1>
+    <p class="lede en">From payment to pickup, every screenshot is checked before goods leave the shop.</p>
+    <p class="lede zh">从付款到取货，每张截图都先核对，商品才离开店铺。</p>
+    <p class="en">Follow one RM128 order through a small shop: the customer, the cashier, the owner, the bank, and the tools behind PaySah.</p>
+    <p class="zh">跟着一张 RM128 订单走一遍：顾客、店员、店主、银行，以及 PaySah 背后的工具。</p>
+    <div class="actions"><a class="btn" href="https://paysah.replit.app" target="_blank" rel="noopener"><span class="en">Open the live app</span><span class="zh">打开线上应用</span> ↗</a><a class="btn ghost" href="#s1"><span class="en">Start the walk-through</span><span class="zh">开始流程</span> ↓</a></div>
+    <div class="hint"><span class="en">SCROLL TO MOVE THROUGH THE 7 STEPS</span><span class="zh">向下滚动，走完 7 个步骤</span></div>
+  </div>
+</section>
+
+<section class="ch" id="s1">
+  <div class="panel glass">
+    <div class="step"><b>1</b><span class="en">Customer pays</span><span class="zh">顾客付款</span></div>
+    <h2 class="en">The customer buys and pays by bank transfer.</h2>
+    <h2 class="zh">顾客选好商品，用网银转账付款。</h2>
+    <div class="chips"><span class="chip">DEMO-A-128</span><span class="chip">RM 128.00</span></div>
+    <p class="en">The money goes to the shop's bank account. The customer's screenshot is only a clue. <strong>It does not prove the money arrived.</strong></p>
+    <p class="zh">钱转进商家的银行账户；顾客手上的截图只是线索，<strong>不能证明钱已到账。</strong></p>
+  </div>
+</section>
+
+<section class="ch" id="s2">
+  <div class="panel glass">
+    <div class="step"><b>2</b><span class="en">Sends the screenshot</span><span class="zh">提交付款截图</span></div>
+    <h2 class="en">Telegram or Google Form, straight into PaySah.</h2>
+    <h2 class="zh">通过 Telegram 或 Google Form，直接送进 PaySah。</h2>
+    <ul class="ck en">
+      <li>The shop shares a link for this order, valid for 24 hours.</li>
+      <li>The customer uploads through the Telegram bot or a prefilled Google Form (forwarded by Apps Script).</li>
+      <li>Staff never download and re-upload. They can still upload in the dashboard if needed.</li>
+      <li>The image is stored privately on Replit with a SHA-256 hash.</li>
+    </ul>
+    <ul class="ck zh">
+      <li>商家分享这张订单的专属链接，24 小时内有效。</li>
+      <li>顾客通过 Telegram 机器人或预填 Google Form 上传（由 Apps Script 转发）。</li>
+      <li>员工不用再下载、重新上传；需要时仍可在后台上传。</li>
+      <li>图片以 SHA-256 哈希私密存放在 Replit。</li>
+    </ul>
+  </div>
+</section>
+
+<section class="ch" id="s3">
+  <div class="panel glass">
+    <div class="step"><b>3</b><span class="en">AI reads the receipt</span><span class="zh">系统自动提取</span></div>
+    <h2 class="en">A GPU model reads it. CPU OCR reads it again.</h2>
+    <h2 class="zh">GPU 模型先读，CPU OCR 再读一遍。</h2>
+    <div class="chips"><span class="chip ok">RM 128.00</span><span class="chip ok">22 Oct 2026 · 14:00</span><span class="chip ok">Acc DEMO-ACCOUNT-A</span><span class="chip ok">Ref DEMO-BANK-128</span><span class="chip ok">Successful</span></div>
+    <p class="en">A receipt worker on Replit sends the image to <strong>Qwen2.5-VL-7B on RunPod</strong>, then reads it again with <strong>Tesseract.js</strong>. Any field that differs goes to the Owner.</p>
+    <p class="zh">Replit 上的 receipt worker 把图片交给 <strong>RunPod 上的 Qwen2.5-VL-7B</strong>，再用 <strong>Tesseract.js</strong> 读一遍；只要有字段不同，就转给店主。</p>
+    <div class="mini"><div><span>GPU</span><b>248 / 252</b></div><div><span>CPU</span><b>190 / 252</b></div></div>
+    <p class="en" style="font-size:12px">Fields read correctly on 36 synthetic test receipts.</p>
+    <p class="zh" style="font-size:12px">36 张合成测试收据上的字段读取正确数。</p>
+  </div>
+</section>
+
+<section class="ch" id="s4">
+  <div class="panel glass">
+    <div class="step"><b>4</b><span class="en">Checks the order and bank</span><span class="zh">验证并比对订单</span></div>
+    <h2 class="en">Receipt, order and bank record must agree.</h2>
+    <h2 class="zh">截图、订单、入账记录三方一致才算通过。</h2>
+    <ul class="ck en">
+      <li>Amount equals the order total</li>
+      <li>Paid into the shop's own account</li>
+      <li>A bank credit with the same reference within 24 hours, not used before</li>
+      <li>Not a duplicate, money request or scheduled transfer</li>
+    </ul>
+    <ul class="ck zh">
+      <li>金额等于订单应付金额</li>
+      <li>转入商家自己的账户</li>
+      <li>24 小时内有同参考号的入账，且没被用过</li>
+      <li>不是重复截图、收款请求或预约转账</li>
+    </ul>
+    <div class="chips"><span class="chip ok en">Match → ready to confirm</span><span class="chip ok zh">比对通过 → 可确认</span><span class="chip block en">Anything off → blocked, or sent to the Owner</span><span class="chip block zh">有异常 → 拦下，或交给店主</span></div>
+  </div>
+</section>
+
+<section class="ch" id="s5">
+  <div class="panel glass">
+    <div class="step"><b>5</b><span class="en">Cashier confirms</span><span class="zh">店员确认</span></div>
+    <h2 class="en">Clean match up to RM500? The cashier confirms.</h2>
+    <h2 class="zh">RM500 以内、没有异常？店员一键确认。</h2>
+    <div class="mini"><div><span class="en">Order DEMO-A-128</span><span class="zh">订单 DEMO-A-128</span><b>RM 128.00</b></div><div><span class="en">Result</span><span class="zh">结果</span><b style="color:var(--brand)"><span class="en">Matched</span><span class="zh">已匹配</span></b></div></div>
+    <p class="en">The cashier sees the extracted fields and the evidence, then confirms payment. The order moves from <strong>Unpaid</strong> to <strong>Paid</strong>.</p>
+    <p class="zh">店员在后台看到提取的字段和证据后确认付款，订单从<strong>未付</strong>变成<strong>已付</strong>。</p>
+  </div>
+</section>
+
+<section class="ch" id="s6">
+  <div class="panel glass">
+    <div class="step amber"><b>6</b><span class="en">Owner approves (if needed)</span><span class="zh">店主审批（如需）</span></div>
+    <h2 class="en">Bigger or unusual cases go to the Owner.</h2>
+    <h2 class="zh">高金额或特殊情况，交给店主决定。</h2>
+    <div class="chips"><span class="chip warn">&gt; RM500</span><span class="chip warn en">GPU/CPU disagree</span><span class="chip warn zh">GPU/CPU 不一致</span><span class="chip warn en">Duplicate reference</span><span class="chip warn zh">参考号重复</span><span class="chip warn en">Manually corrected</span><span class="chip warn zh">人工修正过</span></div>
+    <p class="en">The Owner approves or rejects with a reason, for example order DEMO-A-780 at RM 780. <strong>The Owner cannot override missing bank evidence:</strong> partial payments, wrong accounts, amount mismatches and missing bank records stay unpaid.</p>
+    <p class="zh">店主填写理由后批准或拒绝，例如 RM 780 的订单 DEMO-A-780。<strong>店主也不能代替缺失的银行证据：</strong>部分付款、转错账户、金额不符、没有入账的单都保持未付。</p>
+  </div>
+</section>
+
+<section class="ch" id="s7">
+  <div class="panel glass">
+    <div class="step"><b>7</b><span class="en">Release the goods</span><span class="zh">发放商品</span></div>
+    <h2 class="en">Paid first. Then a separate release.</h2>
+    <h2 class="zh">先确认付款，再单独放行。</h2>
+    <div class="mini"><div><span class="en">Payment</span><span class="zh">付款</span><b style="color:var(--brand)">Unpaid → Paid</b></div><div><span class="en">Release</span><span class="zh">放行</span><b style="color:var(--brand)">On hold → Released</b></div></div>
+    <p class="en">Only a fully paid order can be released, and orders above RM500 need the Owner. Every step, who did it, when and why, is saved in the activity log.</p>
+    <p class="zh">只有全额付款的订单能放行，超过 RM500 需要店主放行。每一步谁做的、何时、为什么，都记录在活动日志里。</p>
+  </div>
+</section>
+
+<section class="ch" id="s8">
+  <div class="panel glass">
+    <div class="step"><span class="en">How we built it</span><span class="zh">我们怎么搭出来的</span></div>
+    <h2 class="en">Replit runs the shop's back office. RunPod reads.</h2>
+    <h2 class="zh">Replit 跑整个后台，RunPod 负责读图。</h2>
+    <div class="stack">
+      <div><span>Intake</span><p>Telegram bot · Google Form + Apps Script</p></div>
+      <div><span>Web</span><p>React 19 · Vite</p></div>
+      <div><span>API</span><p>Node.js 24 · Express 5 · Zod · Multer</p></div>
+      <div><span>Worker</span><p class="en">Job queue · Sharp · Tesseract.js 7</p><p class="zh">任务队列 · Sharp · Tesseract.js 7</p></div>
+      <div><span>Data</span><p class="en">PostgreSQL 17 · private App Storage</p><p class="zh">PostgreSQL 17 · 私有 App Storage</p></div>
+      <div><span>GPU</span><p>RunPod Serverless vLLM · Qwen2.5-VL-7B</p></div>
+    </div>
+    <p class="en">Everything except the GPU model runs on Replit at paysah.replit.app.</p>
+    <p class="zh">除了 GPU 模型，其余全部运行在 Replit（paysah.replit.app）。</p>
+  </div>
+</section>
+
+<section class="ch" id="s9">
+  <div class="panel glass">
+    <div class="step"><span class="en">Built to be careful</span><span class="zh">为谨慎而设计</span></div>
+    <h2 class="en">Less manual work. No guessing about money.</h2>
+    <h2 class="zh">少做手工，钱的事不靠猜。</h2>
+    <div class="mini" style="grid-template-columns:1fr"><div><span class="en">Downloads / uploads per receipt</span><span class="zh">每张截图的下载/上传</span><b>2 → 0</b></div></div>
+    <p class="en">Targets SDG 8.2 and 8.3. All orders, receipts and bank records here are synthetic. No live bank or Orbyte connection is included; Orbyte integration is planned.</p>
+    <p class="zh">对应 SDG 8.2 与 8.3。页面中的订单、截图和入账记录都是合成资料；没有接入真实银行或 Orbyte，接入 Orbyte 为规划中的扩展。</p>
+    <div class="actions"><a class="btn" href="https://paysah.replit.app" target="_blank" rel="noopener"><span class="en">Try PaySah</span><span class="zh">试用 PaySah</span> ↗</a></div>
+  </div>
+</section>
+<section class="ch" id="s10">
+  <div class="panel glass">
+    <div class="step"><span class="en">Not just shops</span><span class="zh">不只是实体店</span></div>
+    <h2 class="en">Selling on RedNote, Facebook or Instagram? Same check.</h2>
+    <h2 class="zh">在小红书、Facebook、Instagram 卖东西？一样能核对。</h2>
+    <div class="chips"><span class="chip xhs en">RedNote</span><span class="chip xhs zh">小红书 RedNote</span><span class="chip fb">Facebook</span><span class="chip ig">Instagram</span></div>
+    <p class="en">Many small sellers take orders in DMs and get paid by bank transfer, outside Shopee or Lazada checkout. No platform holds the money, so <strong>a screenshot is all they get.</strong></p>
+    <p class="zh">很多小卖家在私信里接单、让买家网银转账，不经过 Shopee 或 Lazada 的结账。没有平台代收款，<strong>卖家手上只有一张截图。</strong></p>
+    <ul class="ck en">
+      <li>Create the order in PaySah and paste the 24-hour link into the chat.</li>
+      <li>The buyer sends the screenshot through Telegram or Google Form.</li>
+      <li>Ship only after the order turns Paid.</li>
+    </ul>
+    <ul class="ck zh">
+      <li>在 PaySah 建单，把 24 小时有效的链接贴进聊天。</li>
+      <li>买家通过 Telegram 或 Google Form 提交截图。</li>
+      <li>订单变成已付，才寄货。</li>
+    </ul>
+  </div>
+</section>
+
+<section class="ch" id="s11">
+  <div class="panel glass">
+    <div class="step"><span class="en">Business value</span><span class="zh">商业价值</span></div>
+    <h2 class="en">Less loss. Less checking. Clear records.</h2>
+    <h2 class="zh">少亏损、少核对、记录清楚。</h2>
+    <div class="vals">
+      <div class="v1"><b class="en">Stop losing stock</b><b class="zh">不再白送货</b><p class="en">No matching bank credit, no Paid status. Goods stay on hold.</p><p class="zh">没有对得上的入账，就不能标记已付，商品不会放出。</p></div>
+      <div class="v2"><b class="en">Less manual checking</b><b class="zh">少手动核对</b><p class="en">No more opening the bank app for every order. Downloads / uploads per receipt: 2 → 0.</p><p class="zh">不用每单都开银行 App。每张截图的下载/上传：2 → 0。</p></div>
+      <div class="v3"><b class="en">Owner time where it counts</b><b class="zh">店主时间花在刀刃上</b><p class="en">The cashier clears routine orders. The Owner only sees big or risky ones.</p><p class="zh">店员处理日常单，店主只看大额或有风险的单。</p></div>
+      <div class="v4"><b class="en">Every step on record</b><b class="zh">全程有记录</b><p class="en">Who submitted, checked, approved and released, with time and reason.</p><p class="zh">谁提交、核对、批准、放货，时间和理由都有记录。</p></div>
+    </div>
+    <p class="en">Buyers keep paying the way they already do, by bank transfer. Nothing new to install for them.</p>
+    <p class="zh">买家照常用网银转账，不用多装任何东西。</p>
+    <div class="actions"><a class="btn" href="https://paysah.replit.app" target="_blank" rel="noopener"><span class="en">Try PaySah</span><span class="zh">试用 PaySah</span> ↗</a></div>
+  </div>
+</section>
+</main>
+<footer><span class="en">PaySah · SDC Hackathon 2026 · UTeMku Cemerlang · synthetic data only</span><span class="zh">PaySah · SDC Hackathon 2026 · UTeMku Cemerlang · 仅使用合成资料</span></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+const root=document.documentElement;
+function setLang(l){root.dataset.l=l;root.lang=l==='zh'?'zh-Hans':'en';
+  document.getElementById('l-en').setAttribute('aria-pressed',l==='en');document.getElementById('l-zh').setAttribute('aria-pressed',l==='zh');
+  try{localStorage.setItem('paysah-lang',l)}catch(e){} if(window.__paysahLang)window.__paysahLang(l); labels.forEach(L=>L.el.querySelector('span').textContent=l==='zh'?L.zh:L.en);}
+let labels=[];
+let saved='en';try{saved=localStorage.getItem('paysah-lang')||'en'}catch(e){}
+document.getElementById('l-en').onclick=()=>setLang('en');document.getElementById('l-zh').onclick=()=>setLang('zh');
+const sections=[...document.querySelectorAll('section.ch')];
+const rail=[...document.querySelectorAll('.rail a')];
+let target=0,cur=0;
+function measure(){
+  const vc=innerHeight/2;let idx=0;
+  for(let i=0;i<sections.length;i++){const r=sections[i].getBoundingClientRect(),c=r.top+r.height/2;
+    if(c<=vc){idx=i;const n=sections[i+1];if(n){const rn=n.getBoundingClientRect(),cn=rn.top+rn.height/2;idx=i+Math.min(1,Math.max(0,(vc-c)/(cn-c)))}}}
+  target=idx;const on=Math.round(idx);
+  rail.forEach((a,i)=>{if(a.dataset.c){a.classList.toggle('on',on===+a.dataset.c);return}a.classList.toggle('on',on===i+1);a.classList.toggle('done',on>i+1&&on<=7);});
+}
+addEventListener('scroll',measure,{passive:true});
+setLang(saved);measure();
+if(typeof THREE==='undefined')return;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- renderer & camera ---------- */
+const canvas=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setClearColor(0x000000,0);
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputEncoding=THREE.sRGBEncoding;
+const scene=new THREE.Scene();
+const cam=new THREE.OrthographicCamera(-1,1,1,-1,.1,200);
+const hemi=new THREE.HemisphereLight(0xfff4e6,0x9c8f80,.72);scene.add(hemi);
+const sun=new THREE.DirectionalLight(0xfff1dd,1.0);sun.position.set(9,16,8);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
+Object.assign(sun.shadow.camera,{left:-16,right:16,top:16,bottom:-16,near:1,far:60});sun.shadow.bias=-.0008;scene.add(sun);
+
+/* ---------- helpers ---------- */
+const M=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.85,metalness:0,flatShading:true},o));
+function box(w,h,d,mat,x,y,z,par){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;(par||scene).add(m);return m}
+function cyl(rt,rb,h,seg,mat,x,y,z,par){const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg),mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;(par||scene).add(m);return m}
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+function tex(w,h,draw){const cv=document.createElement('canvas');cv.width=w;cv.height=h;draw(cv.getContext('2d'),w,h);const t=new THREE.CanvasTexture(cv);t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return t}
+const F=(wt,sz,m)=>`${wt} ${sz}px ${m?'"IBM Plex Mono",monospace':'"Sora","Noto Sans SC",sans-serif'}`;
+function sprite(t,w,h){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true,depthWrite:false}));s.scale.set(w,h,1);scene.add(s);return s}
+
+/* ---------- palette ---------- */
+const C={base:0xe8dcc8,side:0xa9937a,road:0xd1c7b8,wall:0xf6f1ea,roof:0x5f574f,wood:0xc69d70,brand:0x1f7a5a,amber:0xd9822b,coral:0xe2735a,glass:0x9fc7d6,dark:0x34404a,leaf:0x8db58a,leaf2:0x6f9c72,trunk:0x8a6a4e};
+
+/* ---------- island ---------- */
+box(17,.9,11,M(C.side),0,-.45,0);
+box(17.2,.12,11.2,M(C.base),0,.06,0);
+box(17,.04,1.6,M(0xb9b2a8),0,.13,3.8);
+[[-6.6,-3.6,3.4,3],[6.8,.6,3,2.2],[-.2,-4.2,3,1.8],[3.4,1.2,2,1.6],[-7.2,1.4,2.2,1.6]].forEach(([x,z,w,d])=>box(w,.08,d,M(0xa9c98f),x,.14,z));
+for(let i=-7;i<=7;i+=2)box(.9,.02,.12,M(0xffffff),i,.16,3.8);
+box(17,.06,.7,M(0xe6dccd),0,.15,2.7);
+// shop
+const shop=new THREE.Group();scene.add(shop);shop.position.set(-4,0,-.6);
+box(5,.16,3.6,M(0xe9dfd0),0,.2,0,shop);
+box(5,2.7,.2,M(0xf3d9b8),0,1.45,-1.7,shop);
+box(.2,2.7,3.6,M(0xf6efe6),-2.4,1.45,0,shop);box(.2,1.2,3.6,M(0xf6efe6),2.4,.75,0,shop);
+box(.2,2.7,1.6,M(C.wall),.9,1.45,-.9,shop); // owner office divider
+
+const awn=[0xf3ece2,0xe2735a];for(let i=0;i<6;i++){const s=box(.84,.08,.7,M(awn[i%2]),-2.1+i*.84,1.95,-1.35,shop);s.rotation.x=-.35}
+const signT=tex(512,96,(c,w,h)=>{rr(c,0,0,w,h,20);c.fillStyle='#2a2420';c.fill();c.fillStyle='#fff';c.font=F(700,52);c.textAlign='center';c.fillText('Mak Long Bakes',w/2,66)});
+const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.2,.6),new THREE.MeshBasicMaterial({map:signT}));sign.position.set(0,3.2,-1.54);shop.add(sign);
+box(3.4,.62,.1,M(0x2a2420),0,3.2,-1.61,shop);
+// shelves + goods
+box(3,1.3,.5,M(C.wood),-.7,.95,-1.35,shop);
+const goods=[0xf2c14e,0xe2735a,0x8db58a,0xf3ece2,0xc69d70];for(let i=0;i<10;i++)box(.36,.3,.32,M(goods[i%5]),-2+i%5*.62,i<5?1.75:1.15,-1.3,shop);
+// counter + register
+box(2.6,.6,.8,M(C.wood),-.8,.5,.6,shop);box(2.7,.08,.9,M(0xf6efe6),-.8,.84,.6,shop);
+box(.5,.32,.4,M(C.dark),.1,1.04,.6,shop);
+// owner desk + laptop
+box(1.1,.7,.7,M(C.wood),1.65,.55,-1.05,shop);box(.5,.04,.36,M(0xcfd6db),1.65,.92,-1.05,shop);
+const lap=box(.5,.32,.04,M(0x34404a,{emissive:0x7fc8ff,emissiveIntensity:.25}),1.65,1.1,-1.24,shop);
+// windows glow (night)
+const winMat=M(0xfff2c8,{emissive:0xffcf7a,emissiveIntensity:0});
+box(.04,1,1.2,winMat,-2.52,1.5,.2,shop);const shopLight=new THREE.PointLight(0xffc77a,0,7);shopLight.position.set(-4,2.4,0);scene.add(shopLight);
+
+// people
+function person(shirt,x,z,ry,hair=0x2b2420){const g=new THREE.Group();g.position.set(x,.2,z);g.rotation.y=ry;scene.add(g);
+  cyl(.2,.24,.75,10,M(shirt),0,.62,0,g);cyl(.09,.09,.5,8,M(0x3a342f),-.09,.25,0,g);cyl(.09,.09,.5,8,M(0x3a342f),.09,.25,0,g);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.2,14,12),M(0xf0c9a5,{flatShading:false}));head.position.y=1.2;head.castShadow=true;g.add(head);
+  const hair_=new THREE.Mesh(new THREE.SphereGeometry(.21,14,12,0,Math.PI*2,0,Math.PI*.55),M(hair));hair_.position.y=1.24;g.add(hair_);return g}
+const customer=person(0x4f86c6,-3.4,2.4,Math.PI,0x3b2a20);
+const phone=box(.12,.2,.03,M(0x222,{emissive:0x9fe0ff,emissiveIntensity:.0}),.22,.85,-.18,customer);
+const cashier=person(0x1f7a5a,-4.9,-.85,0);cashier.scale.setScalar(1.12);
+box(.36,.4,.05,M(0xf3ece2),0,.62,.2,cashier); // apron
+const owner=person(0xd9822b,-2.35,-1.25,-.4,0x1e1a17);
+
+// bank
+const bank=new THREE.Group();scene.add(bank);bank.position.set(5.3,0,-2.6);
+box(3.8,.3,2.8,M(0xe8e0d4),0,.3,0,bank);box(3.6,.2,2.6,M(0xefe9df),0,.55,.05,bank);
+box(3.2,1.9,1.4,M(0xdcd3c6),0,1.6,-.5,bank);
+for(let i=0;i<4;i++)cyl(.14,.16,1.8,10,M(0xfbf8f2),-1.2+i*.8,1.55,.75,bank);
+box(3.6,.22,2.2,M(0xe6ddcf),0,2.55,.15,bank);
+const ped=new THREE.Mesh(new THREE.CylinderGeometry(1.95,1.95,2.2,3,1),M(0xe6ddcf));ped.rotation.z=Math.PI/2;ped.rotation.y=Math.PI/2;ped.scale.set(.42,1,1);ped.position.set(0,3.05,.15);bank.add(ped);
+const bankT=tex(256,72,(c,w,h)=>{c.fillStyle='#5e554c';c.font=F(700,46);c.textAlign='center';c.fillText('BANK',w/2,52)});
+const bs=new THREE.Mesh(new THREE.PlaneGeometry(1.2,.34),new THREE.MeshBasicMaterial({map:bankT,transparent:true}));bs.position.set(0,2.85,1.27);bank.add(bs);
+
+// PaySah hub (Replit)
+const hub=new THREE.Group();scene.add(hub);hub.position.set(1.2,0,-2.7);
+box(2.6,.2,2.4,M(0xe3dace),0,.25,0,hub);
+const hubMat=M(0x2f3a44,{roughness:.4});box(2,2.1,1.8,hubMat,0,1.4,0,hub);
+const stripe=M(0x1f7a5a,{emissive:0x35d39a,emissiveIntensity:.35});for(let i=0;i<4;i++)box(2.02,.06,1.82,stripe,0,.75+i*.42,0,hub);
+cyl(.03,.03,.7,6,M(0x5e554c),.6,2.8,.3,hub);const tip=new THREE.Mesh(new THREE.SphereGeometry(.08,10,8),M(0xffffff,{emissive:0x35d39a,emissiveIntensity:1}));tip.position.set(.6,3.18,.3);hub.add(tip);
+const db=cyl(.45,.45,.9,16,M(0x8fa7b8),1.8,.8,.6,hub);cyl(.46,.46,.06,16,M(0xd9e3ea),1.8,1.1,.6,hub);cyl(.46,.46,.06,16,M(0xd9e3ea),1.8,.8,.6,hub);
+box(.7,.6,.6,M(0xb7a58e),1.8,.65,-.5,hub);
+const hubT=tex(512,96,(c,w,h)=>{rr(c,0,0,w,h,20);c.fillStyle='#1f7a5a';c.fill();c.fillStyle='#fff';c.font=F(700,46);c.textAlign='center';c.fillText('PaySah · Replit',w/2,64)});
+const hs=new THREE.Mesh(new THREE.PlaneGeometry(1.9,.36),new THREE.MeshBasicMaterial({map:hubT}));hs.position.set(0,2.7,.92);hub.add(hs);
+
+// RunPod island
+const isl=new THREE.Group();scene.add(isl);isl.position.set(10.2,2.4,-3.2);
+box(3.2,.6,2.6,M(0xd9cdbb),0,-.3,0,isl);box(3.3,.08,2.7,M(0xefe7da),0,.04,0,isl);
+const gpuMat=M(0x2c2340,{emissive:0x8a5cff,emissiveIntensity:.35});box(1.2,1.6,.9,gpuMat,0,.88,0,isl);
+for(let i=0;i<5;i++)box(1.22,.05,.92,M(0x8a5cff,{emissive:0xb592ff,emissiveIntensity:.8}),0,.3+i*.3,0,isl);
+const beamG=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(1.2,3,-2.7),new THREE.Vector3(10.2,3.6,-3.2)]);
+const beam=new THREE.Line(beamG,new THREE.LineDashedMaterial({color:0x8a5cff,dashSize:.25,gapSize:.18,transparent:true,opacity:.0}));beam.computeLineDistances();scene.add(beam);
+
+// trees, lamps, car
+function tree(x,z,s=1){cyl(.08*s,.1*s,.6*s,6,M(C.trunk),x,.45*s,z);const c1=new THREE.Mesh(new THREE.IcosahedronGeometry(.55*s,0),M(C.leaf));c1.position.set(x,1.1*s,z);c1.castShadow=true;scene.add(c1);
+  const c2=new THREE.Mesh(new THREE.IcosahedronGeometry(.4*s,0),M(C.leaf2));c2.position.set(x+.2*s,1.5*s,z-.1);c2.castShadow=true;scene.add(c2)}
+[[-7.6,-3.8,1.2],[-7.4,1.6,.9],[3,1.4,.8],[7.6,-.6,1.1],[-.6,-4.3,.9],[7.8,1.7,.8]].forEach(t=>tree(...t));
+const lampMats=[],lampLights=[];
+[[-1.4,2.9],[2.8,2.9],[6.6,2.9]].forEach(([x,z])=>{cyl(.04,.05,1.5,6,M(0x5e554c),x,.9,z);const bm=M(0xfff4dc,{emissive:0xffc76b,emissiveIntensity:0});lampMats.push(bm);
+  const b=new THREE.Mesh(new THREE.SphereGeometry(.12,10,8),bm);b.position.set(x,1.7,z);scene.add(b);const L=new THREE.PointLight(0xffc06b,0,4.5);L.position.set(x,1.6,z);scene.add(L);lampLights.push(L)});
+const car=new THREE.Group();scene.add(car);car.position.set(4.5,.2,4.1);box(1.3,.4,.7,M(0xe2735a),0,.25,0,car);box(.75,.3,.62,M(0xf6efe6),-.1,.6,0,car);
+[[-.4,.33],[.4,.33],[-.4,-.33],[.4,-.33]].forEach(([x,z])=>cyl(.13,.13,.1,10,M(0x2a2420),x,.1,z,car).rotation.x=Math.PI/2);
+
+/* ---------- floating story pieces (sprites) ---------- */
+const JADE='#1f7a5a',AMB='#d9822b';
+const receiptT=tex(300,520,(c,w,h)=>{rr(c,6,6,w-12,h-12,26);c.fillStyle='#fffdf8';c.fill();c.strokeStyle='#e7ddcf';c.lineWidth=4;c.stroke();
+  rr(c,6,6,w-12,70,26);c.fillStyle='#2a2420';c.fill();c.fillRect(6,50,w-12,26);c.fillStyle='#fff';c.font=F(500,18,1);c.fillText('DuitNow Transfer',24,48);
+  c.beginPath();c.arc(w/2,126,30,0,7);c.fillStyle='#e3f2ea';c.fill();c.strokeStyle=JADE;c.lineWidth=6;c.lineCap='round';c.beginPath();c.moveTo(w/2-13,126);c.lineTo(w/2-3,137);c.lineTo(w/2+14,114);c.stroke();
+  c.textAlign='center';c.fillStyle='#2a2420';c.font=F(600,20);c.fillText('Transfer successful',w/2,186);c.font=F(700,44);c.fillText('RM 128.00',w/2,236);c.textAlign='left';
+  [['To','Mak Long Bakes'],['Account','DEMO-ACCOUNT-A'],['Time','14:00'],['Ref','DEMO-BANK-128'],['Status','Successful']].forEach((r,i)=>{const y=290+i*40;c.fillStyle='#8a7f73';c.font=F(500,16,1);c.fillText(r[0],24,y);c.fillStyle='#2a2420';c.font=F(600,17);c.textAlign='right';c.fillText(r[1],w-24,y);c.textAlign='left'});
+  c.fillStyle='#a99f94';c.font=F(400,12,1);c.textAlign='center';c.fillText('SYNTHETIC SAMPLE',w/2,h-24);});
+const receipt=sprite(receiptT,.75,1.3);
+const scanT=tex(300,40,(c,w,h)=>{const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(53,211,154,0)');g.addColorStop(.5,'rgba(53,211,154,.95)');g.addColorStop(1,'rgba(53,211,154,0)');c.fillStyle=g;c.fillRect(0,0,w,h)});
+const scan=sprite(scanT,.85,.12);
+function cardT(lines,accent){return tex(420,240,(c,w,h)=>{rr(c,4,4,w-8,h-8,28);c.fillStyle='rgba(255,253,249,.97)';c.fill();c.strokeStyle=accent;c.lineWidth=5;c.stroke();
+  c.fillStyle=accent;c.font=F(500,20,1);c.fillText(lines[0],28,48);c.fillStyle='#2a2420';c.font=F(600,26);c.fillText(lines[1],28,98);c.font=F(700,46);c.fillText(lines[2],28,160);
+  rr(c,28,180,w-56,38,19);c.fillStyle=accent+'22';c.fill();c.fillStyle=accent;c.font=F(600,18,1);c.fillText(lines[3],44,206)})}
+const orderCard=sprite(cardT(['ORDER','DEMO-A-128','RM 128.00','total due · unpaid'],AMB),1.6,.92);
+const bankCard=sprite(cardT(['BANK CREDIT · 14:00','Ref DEMO-BANK-128','RM 128.00','✓ same account · same ref'],JADE),1.6,.92);
+function badgeT(title,sub,col,mark){return tex(420,300,(c,w,h)=>{c.beginPath();c.arc(w/2,96,72,0,7);c.fillStyle=col;c.fill();c.strokeStyle='#fff';c.lineWidth=8;c.stroke();
+  c.strokeStyle='#fff';c.lineWidth=14;c.lineCap='round';c.lineJoin='round';c.beginPath();
+  if(mark==='check'){c.moveTo(w/2-30,98);c.lineTo(w/2-8,120);c.lineTo(w/2+34,72);}else{c.moveTo(w/2,62);c.lineTo(w/2,104);c.moveTo(w/2,128);c.lineTo(w/2,130);}c.stroke();
+  rr(c,40,186,w-80,96,30);c.fillStyle='rgba(42,36,32,.92)';c.fill();c.textAlign='center';c.fillStyle='#fff';c.font=F(600,28);c.fillText(title,w/2,228);c.fillStyle='#e8dccd';c.font=F(500,18,1);c.fillText(sub,w/2,260)})}
+const cashierOK=sprite(badgeT('Payment confirmed','Cashier · DEMO-A-128 · RM128','#1f7a5a','check'),1.3,.93);
+const ownerOK=sprite(badgeT('Owner approved','DEMO-A-780 · RM780','#d9822b','check'),1.3,.93);
+const doneOK=sprite(badgeT('Order released','Paid · Released · logged','#1f7a5a','check'),1.3,.93);
+const flagB=sprite(badgeT('Mismatch → blocked','reason shown · not fraud','#c8553d','bang'),1.2,.86);
+function iconT(kind){return tex(160,160,(c,w,h)=>{c.translate(w/2,h/2);c.beginPath();c.arc(0,0,70,0,7);
+  if(kind==='tg'){c.fillStyle='#2aabee';c.fill();c.fillStyle='#fff';c.beginPath();c.moveTo(-38,-2);c.lineTo(36,-31);c.lineTo(22,33);c.lineTo(2,16);c.lineTo(-9,28);c.lineTo(-10,9);c.closePath();c.fill();c.fillStyle='#c8e6f7';c.beginPath();c.moveTo(-10,9);c.lineTo(24,-19);c.lineTo(2,16);c.lineTo(-9,28);c.closePath();c.fill();}
+  else{c.fillStyle='#7248b9';c.fill();rr(c,-28,-38,56,76,9);c.fillStyle='#fff';c.fill();c.fillStyle='#7248b9';for(let i=0;i<3;i++){c.beginPath();c.arc(-13,-19+i*19,4.5,0,7);c.fill();c.fillRect(-4,-23+i*19,22,7);}}})}
+const tgIcon=sprite(iconT('tg'),.7,.7),gfIcon=sprite(iconT('gf'),.7,.7);
+function socialT(kind){return tex(200,200,(c,w,h)=>{c.shadowColor='rgba(60,48,36,.3)';c.shadowBlur=14;rr(c,22,22,156,156,40);
+  if(kind==='xhs'){c.fillStyle='#ff2442';c.fill();c.shadowBlur=0;c.fillStyle='#fff';c.font='800 36px "Manrope",Arial,sans-serif';c.textAlign='center';c.fillText('rednote',100,112);}
+  else if(kind==='fb'){c.fillStyle='#1877f2';c.fill();c.shadowBlur=0;c.fillStyle='#fff';c.font='800 110px "Manrope",Arial,sans-serif';c.textAlign='center';c.fillText('f',108,146);}
+  else{const g=c.createLinearGradient(22,178,178,22);g.addColorStop(0,'#feda75');g.addColorStop(.35,'#fa7e1e');g.addColorStop(.65,'#d62976');g.addColorStop(1,'#4f5bd5');c.fillStyle=g;c.fill();c.shadowBlur=0;
+    c.strokeStyle='#fff';c.lineWidth=11;rr(c,56,56,88,88,26);c.stroke();c.beginPath();c.arc(100,100,21,0,7);c.stroke();c.fillStyle='#fff';c.beginPath();c.arc(127,73,6.5,0,7);c.fill();}})}
+const SOC=[['xhs',[-6.8,7.6,2.8]],['fb',[-4.4,9.4,4.0]],['ig',[-2.0,11.0,5.2]]].map(([k,pos],i)=>({s:sprite(socialT(k),.9,.9),pos,i}));
+const socLineG=new THREE.BufferGeometry();socLineG.setAttribute('position',new THREE.BufferAttribute(new Float32Array(18),3));
+const socLines=new THREE.LineSegments(socLineG,new THREE.LineDashedMaterial({color:0x1f7a5a,dashSize:.18,gapSize:.12,transparent:true,opacity:0}));scene.add(socLines);
+const coin=cyl(.22,.22,.06,18,M(0xf2c14e,{metalness:.4,roughness:.35,emissive:0x8a5a10,emissiveIntensity:.2}),0,0,0);coin.rotation.x=Math.PI/2;
+const bag=new THREE.Group();scene.add(bag);box(.4,.45,.25,M(0xc69d70),0,0,0,bag);const handle=new THREE.Mesh(new THREE.TorusGeometry(.12,.025,6,12,Math.PI),M(0x8a6a4e));handle.position.y=.22;bag.add(handle);
+const rings=[];function ring(x,z,col){const r=new THREE.Mesh(new THREE.RingGeometry(.45,.6,40),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false}));r.rotation.x=-Math.PI/2;r.position.set(x,.23,z);scene.add(r);rings.push(r);return r}
+const rCust=ring(-3.4,2.4,0x1f7a5a),rCash=ring(-4.9,-.85,0x1f7a5a),rOwn=ring(-2.35,-1.85,0xd9822b);
+const linkG=new THREE.BufferGeometry();linkG.setAttribute('position',new THREE.BufferAttribute(new Float32Array(12),3));
+const links=new THREE.LineSegments(linkG,new THREE.LineBasicMaterial({color:0x1f7a5a,transparent:true,opacity:0}));scene.add(links);
+
+/* ---------- HTML labels anchored in 3D ---------- */
+const LBL=document.getElementById('labels');
+function label(en,zh,pos,ch,cls='',icon='•'){const el=document.createElement('div');el.className='lbl '+cls;el.innerHTML=`<i>${icon}</i><span></span>`;el.style.opacity=0;LBL.appendChild(el);
+  const L={el,en,zh,pos:new THREE.Vector3(...pos),ch};labels.push(L);return L}
+label('Customer','顾客',[-3.4,1.75,2.4],[0,1,7,10],'', 'C');
+(label('Bank','银行',[5.3,4,-2.4],[0,1,8],'dark','B')).off=[60,-66];
+(label('Telegram bot','Telegram 机器人',[-1.6,3.2,.9],[8],'blue','T')).off=[-125,-53];
+(label('Google Form','Google Form',[0,3.2,.3],[8],'purple','G')).off=[-48,-130];
+(label('PaySah on Replit','PaySah（Replit）',[1.2,3.5,-2.4],[0,8],'','P')).off=[7,-122];
+(label('Receipt worker + Tesseract.js','Receipt worker + Tesseract.js',[1.2,2.2,-1.6],[8],'dark','W')).off=[-87,136];
+(label('RunPod GPU · Qwen2.5-VL','RunPod GPU · Qwen2.5-VL',[10.2,5,-3.2],[8],'purple','R')).off=[35,-149];
+(label('PostgreSQL + App Storage','PostgreSQL + App Storage',[3,1.6,-2.1],[8],'dark','D')).off=[87,86];
+label('Cashier','店员',[-4.9,1.95,-.85],[0,5,7],'', 'S');
+label('Owner','店主',[-2.35,1.75,-1.25],[0,6],'amber','O');
+setLang(saved);
+
+/* ---------- keyframes per chapter (10) ---------- */
+// camera: [tx,ty,tz, zoom, azimuth deg]
+const CAM=[[1.6,.6,-.4,.62,38],[-2.6,1,.6,1.15,26],[-3,1.4,1.6,1.9,28],[1.2,1.8,-2.2,1.2,46],[2.6,1.6,-1.2,1,40],[-4.2,1,-.2,1.45,24],[-3.2,1,-.8,1.4,48],[-3.4,1,1,1.2,32],[2.6,1.2,-1,.56,42],[1.6,.6,-.4,.64,118],[-3.4,2.8,2.4,1.0,24],[1.6,.6,-.4,.62,60]];
+// receipt [x,y,z,opacity]
+const RC=[[-3.2,1.2,2.3,0],[-3.2,1.5,2.2,1],[-3.2,1.9,2.2,0],[-3.2,1.9,2.2,0],[-3.2,1.9,2.2,0],[-4.1,2.2,.1,0],[-3.6,2.4,-.6,0],[-3.6,2.4,-.6,0],[-3.6,2.4,-.6,0],[-3.6,2.4,-.6,0]];
+const ease=t=>t*t*(3-2*t);
+function S(arr,p){const i=Math.max(0,Math.min(arr.length-1,Math.floor(p))),j=Math.min(arr.length-1,i+1),t=ease(Math.max(0,Math.min(1,p-i)));return arr[i].map((v,k)=>v+(arr[j][k]-v)*t)}
+const near=(p,c,w=.7)=>Math.max(0,1-Math.abs(p-c)/w);
+
+
+/* ---------- close-up transaction layer (steps 2–4) ---------- */
+const cv2=document.getElementById('close'),veil=document.getElementById('veil');
+const r2=new THREE.WebGLRenderer({canvas:cv2,antialias:true,alpha:true});r2.setPixelRatio(Math.min(devicePixelRatio,2));r2.setClearColor(0,0);r2.outputEncoding=THREE.sRGBEncoding;
+const sc2=new THREE.Scene(),cam2=new THREE.PerspectiveCamera(38,1,.1,50);cam2.position.set(0,0,7);
+const world2=new THREE.Group();sc2.add(world2);
+function plane(t,w,h,add){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:t,transparent:true,depthWrite:false,side:THREE.DoubleSide,blending:add?THREE.AdditiveBlending:THREE.NormalBlending}));return m}
+const shadowT=tex(128,128,(c,w,h)=>{const g=c.createRadialGradient(w/2,h/2,10,w/2,h/2,w/2);g.addColorStop(0,'rgba(60,48,36,.35)');g.addColorStop(1,'rgba(60,48,36,0)');c.fillStyle=g;c.fillRect(0,0,w,h)});
+function withShadow(mesh,w,h){const g=new THREE.Group();const sh=plane(shadowT,w*1.35,h*1.2);sh.position.set(.12,-.18,-.05);g.add(sh,mesh);g.userData.sh=sh;world2.add(g);return g}
+const RW=1.5,RH=RW*1400/720;
+function drawBigReceipt(c,w,h){
+  rr(c,4,4,w-8,h-8,48);c.fillStyle='#fffdf8';c.fill();c.strokeStyle='#e7ddcf';c.lineWidth=4;c.stroke();
+  c.fillStyle='#2a2420';rr(c,4,4,w-8,170,48);c.fill();c.fillRect(4,120,w-8,54);
+  c.fillStyle='#efe4d6';c.font=F(500,26,1);c.fillText('DuitNow Transfer',48,80);c.fillStyle='#fff';c.font=F(600,30);c.fillText('14:01',w-130,80);
+  c.beginPath();c.arc(w/2,280,58,0,7);c.fillStyle='#e3f2ea';c.fill();c.strokeStyle='#1f7a5a';c.lineWidth=10;c.lineCap='round';c.beginPath();c.moveTo(w/2-26,282);c.lineTo(w/2-6,302);c.lineTo(w/2+28,262);c.stroke();
+  c.textAlign='center';c.fillStyle='#2a2420';c.font=F(600,34);c.fillText('Transfer successful',w/2,392);c.font=F(700,96);c.fillText('RM 128.00',w/2,510);c.textAlign='left';
+  [['To','Mak Long Bakes'],['Account','DEMO-ACCOUNT-A'],['Date','22 Oct 2026'],['Time','14:00'],['Reference','DEMO-BANK-128'],['Status','Successful']].forEach((r,i)=>{const y=620+i*92;
+    c.strokeStyle='#ece5dc';c.lineWidth=2;c.beginPath();c.moveTo(48,y-46);c.lineTo(w-48,y-46);c.stroke();c.fillStyle='#8a7f73';c.font=F(500,28,1);c.fillText(r[0],48,y);
+    c.fillStyle='#2a2420';c.font=F(600,32);c.textAlign='right';c.fillText(r[1],w-48,y);c.textAlign='left'});
+  c.fillStyle='#a99f94';c.font=F(400,22,1);c.textAlign='center';c.fillText('SYNTHETIC SAMPLE · NOT A REAL RECEIPT',w/2,h-48);c.textAlign='left';}
+function drawBigHL(c,w,h){c.strokeStyle='#1f7a5a';c.lineWidth=6;c.shadowColor='rgba(31,122,90,.6)';c.shadowBlur=18;
+  [[w/2-230,428,460,110],[w-360,666,330,60],[w-360,758,330,60],[w-330,850,300,60],[w-360,942,330,60],[w-300,1034,270,60]].forEach(b=>{rr(c,...b,14);c.stroke()});
+  c.shadowBlur=0;c.fillStyle='#1f7a5a';c.font=F(600,24,1);[['amount',w/2-230,418],['account',w-360,656],['date',w-360,748],['time',w-330,840],['reference',w-360,932],['status',w-300,1024]].forEach(l=>c.fillText(l[0],l[1],l[2]));}
+function drawScan2(c,w,h){const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(31,122,90,0)');g.addColorStop(.5,'rgba(53,211,154,.95)');g.addColorStop(1,'rgba(31,122,90,0)');c.fillStyle=g;c.fillRect(0,0,w,h)}
+function drawOrder2(c,w,h){rr(c,3,3,w-6,h-6,36);c.fillStyle='rgba(255,253,249,.98)';c.fill();c.strokeStyle='#d9822b';c.lineWidth=4;c.stroke();
+  c.fillStyle='#b4661b';c.font=F(500,26,1);c.fillText('ORDER',40,64);c.fillStyle='#2a2420';c.font=F(600,40);c.fillText('DEMO-A-128',40,140);
+  c.fillStyle='#8a7f73';c.font=F(500,26,1);c.fillText('Customer  Aina R.',40,200);c.fillStyle='#2a2420';c.font=F(700,64);c.fillText('RM 128.00',40,300);
+  rr(c,w-260,252,220,54,27);c.fillStyle='rgba(217,130,43,.15)';c.fill();c.fillStyle='#b4661b';c.font=F(600,24,1);c.fillText('unpaid',w-210,288);}
+function drawLedger2(c,w,h){rr(c,3,3,w-6,h-6,36);c.fillStyle='rgba(255,253,249,.98)';c.fill();c.strokeStyle='#1f7a5a';c.lineWidth=4;c.stroke();
+  c.fillStyle='#1f7a5a';c.font=F(500,26,1);c.fillText('BANK CREDITS · 22 OCT',40,64);
+  [['13:48','RM 45.00'],['14:00','RM 128.00'],['14:30','RM 120.00']].forEach((r,i)=>{const y=140+i*70;c.fillStyle=i===1?'#1f7a5a':'#8a7f73';c.font=F(500,30,1);c.fillText(r[0],40,y);c.font=F(600,34);c.textAlign='right';c.fillText(r[1],w-40,y);c.textAlign='left';
+    if(i===1){c.strokeStyle='#1f7a5a';c.lineWidth=3;rr(c,24,y-44,w-48,62,12);c.stroke()}});
+  c.fillStyle='#1f7a5a';c.font=F(600,28,1);c.fillText('✓ same account · ref DEMO-BANK-128',40,h-40);}
+function chipT(text,col,kind){return tex(640,120,(c,w,h)=>{rr(c,3,3,w-6,h-6,57);c.fillStyle='rgba(255,253,249,.97)';c.fill();c.strokeStyle=col;c.lineWidth=3;c.stroke();
+  c.save();c.translate(60,h/2);c.beginPath();c.arc(0,0,38,0,7);c.fillStyle=col;c.fill();c.fillStyle='#fff';c.strokeStyle='#fff';c.lineWidth=6;c.lineCap='round';c.lineJoin='round';
+  if(kind==='tg'){c.beginPath();c.moveTo(-20,-1);c.lineTo(19,-16);c.lineTo(12,17);c.lineTo(1,8);c.lineTo(-5,15);c.lineTo(-5,4);c.closePath();c.fill();}
+  else if(kind==='gf'){rr(c,-14,-20,28,40,5);c.fill();c.fillStyle=col;for(let i=0;i<3;i++){c.beginPath();c.arc(-6,-10+i*10,2.6,0,7);c.fill();c.fillRect(0,-12+i*10,10,4);}}
+  else if(kind==='lock'){rr(c,-15,-4,30,24,4);c.fill();c.beginPath();c.arc(0,-6,10,Math.PI,0);c.stroke();}
+  else if(kind==='gpu'){rr(c,-17,-14,34,28,4);c.stroke();for(let i=-1;i<=1;i++){c.beginPath();c.moveTo(i*9,-20);c.lineTo(i*9,-14);c.moveTo(i*9,14);c.lineTo(i*9,20);c.stroke();}}
+  else if(kind==='cpu'){c.font=F(700,26,1);c.textAlign='center';c.fillText('T',0,9);}
+  else {c.beginPath();c.moveTo(-13,0);c.lineTo(-3,10);c.lineTo(15,-10);c.stroke();}
+  c.restore();c.fillStyle='#2a2420';c.font=F(600,34);c.fillText(text,118,h/2+12);})}
+const rFront=plane(tex(720,1400,drawBigReceipt),RW,RH),bigR=withShadow(rFront,RW,RH);rFront.material.depthTest=false;rFront.renderOrder=4;bigR.userData.sh.renderOrder=3;bigR.userData.sh.material.depthTest=false;
+const hlM=plane(tex(720,1400,drawBigHL),RW,RH);hlM.position.z=.01;hlM.material.depthTest=false;hlM.renderOrder=5;bigR.add(hlM);
+const scM=plane(tex(16,128,drawScan2),RW*1.12,.2,true);scM.position.z=.02;scM.material.depthTest=false;scM.renderOrder=5;bigR.add(scM);
+const ord2=withShadow(plane(tex(720,380,drawOrder2),2,2*380/720),2,2*380/720);
+const led2=withShadow(plane(tex(720,380,drawLedger2),2,2*380/720),2,2*380/720);
+const chips2=[['RunPod GPU · Qwen2.5-VL','#7a4fd6','gpu',3,[1.15,.9,.2]],['Tesseract.js on Replit','#3a342f','cpu',3,[1.25,.1,.2]],['Two reads agree','#1f7a5a','ok',3,[1.15,-.7,.2]]]
+  .map(([t,c,k,ch,pos])=>{const m=plane(chipT(t,c,k),ch===2?1.25:1.6,ch===2?.235:.3);world2.add(m);return {m,ch,pos}});
+const hub2=new THREE.Group();world2.add(hub2);
+const glowBall=(col)=>tex(64,64,(c,w,h)=>{const g=c.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);g.addColorStop(0,'#ffffff');g.addColorStop(.25,col);g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.fillRect(0,0,w,h)});
+const RINGS=[[1.55,0x2fbf8f,'#2fbf8f',.0],[2.05,0xff9a3d,'#ff9a3d',.06],[2.55,0x4a9bff,'#4a9bff',-.05],[2.95,0x8a5cff,'#8a5cff',.1]].map(([r,hex,css,rz],i)=>{
+  const g=new THREE.Group();g.rotation.set(-1.0,0,rz);g.scale.set(1.2,1,1);hub2.add(g);
+  const core=new THREE.Mesh(new THREE.TorusGeometry(r,.014,8,220),new THREE.MeshBasicMaterial({color:hex,transparent:true,opacity:0,depthTest:false}));
+  const halo=new THREE.Mesh(new THREE.TorusGeometry(r,.06,8,220),new THREE.MeshBasicMaterial({color:hex,transparent:true,opacity:0,depthTest:false,blending:THREE.AdditiveBlending}));
+  core.renderOrder=halo.renderOrder=1;g.add(halo,core);
+  const ball=new THREE.Sprite(new THREE.SpriteMaterial({map:glowBall(css),transparent:true,depthTest:false,opacity:0}));ball.scale.set(.32,.32,1);ball.renderOrder=2;hub2.add(ball);
+  return {g,core,halo,ball,r,ph:i*1.7,sp:.35-i*.05}});
+function nodeT(title,sub,c1,c2,kind){return tex(820,210,(c,w,h)=>{
+  c.shadowColor=c1+'66';c.shadowBlur=28;rr(c,20,20,w-40,h-40,(h-40)/2);c.fillStyle='rgba(255,255,255,.9)';c.fill();c.shadowBlur=0;
+  c.strokeStyle='rgba(255,255,255,1)';c.lineWidth=3;c.stroke();
+  const cx=106,cy=h/2,g=c.createLinearGradient(cx-62,cy-62,cx+62,cy+62);g.addColorStop(0,c2);g.addColorStop(1,c1);
+  c.shadowColor=c1;c.shadowBlur=26;c.beginPath();c.arc(cx,cy,62,0,7);c.fillStyle=g;c.fill();c.shadowBlur=0;
+  c.save();c.translate(cx,cy);c.fillStyle='#fff';c.strokeStyle='#fff';c.lineWidth=7;c.lineCap='round';c.lineJoin='round';
+  if(kind==='tg'){c.beginPath();c.moveTo(-32,-2);c.lineTo(30,-26);c.lineTo(19,28);c.lineTo(2,14);c.lineTo(-7,24);c.lineTo(-8,8);c.closePath();c.fill();}
+  else if(kind==='gf'){rr(c,-22,-30,44,60,7);c.fill();c.fillStyle=c1;for(let i=0;i<3;i++){c.beginPath();c.arc(-10,-15+i*15,3.6,0,7);c.fill();c.fillRect(-1,-18+i*15,16,6);}}
+  else if(kind==='order'){c.beginPath();c.moveTo(-30,-22);c.lineTo(-20,-22);c.lineTo(-12,12);c.lineTo(22,12);c.lineTo(28,-12);c.lineTo(-16,-12);c.stroke();c.beginPath();c.arc(-8,24,5,0,7);c.arc(18,24,5,0,7);c.fill();}
+  else {c.beginPath();c.moveTo(-32,-12);c.lineTo(0,-32);c.lineTo(32,-12);c.closePath();c.fill();c.fillRect(-30,20,60,8);for(let i=-1;i<=1;i++)c.fillRect(i*18-4,-8,8,26);}
+  c.restore();
+  c.fillStyle='#22201e';c.font=F(700,46);c.fillText(title,196,h/2-6);c.fillStyle='#5e554c';c.font='500 32px "Manrope","Noto Sans SC",sans-serif';c.fillText(sub,196,h/2+42);})}
+const NODES=[['Telegram bot',['Sends the screenshot','提交付款截图'],'#1f78e6','#5fb8ff','tg',[-2.35,1.45]],['Google Form',['Prefilled form upload','预填表单上传截图'],'#6a35c9','#a77bff','gf',[2.4,1.55]],
+  ['Order',['Order records','订单记录'],'#e2651c','#ffae5c','order',[-2.45,-.95]],['Bank Record',['Bank transactions','银行交易记录'],'#11805c','#39d29a','bank',[2.35,-1.2]]].map(([t,sub,c1,c2,k,pos],i)=>{
+  const tx={en:nodeT(t,sub[0],c1,c2,k),zh:nodeT(t,sub[1],c1,c2,k)};
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(2.1,2.1*210/820),new THREE.MeshBasicMaterial({map:tx[root.dataset.l==='zh'?'zh':'en'],transparent:true,depthTest:false,opacity:0}));
+  m.renderOrder=6;hub2.add(m);return {m,pos,i,tx}});
+window.__paysahLang=l=>NODES.forEach(N=>{N.m.material.map=N.tx[l==='zh'?'zh':'en'];N.m.material.needsUpdate=true});
+const lm2=new THREE.LineBasicMaterial({color:0x1f7a5a,transparent:true,opacity:0}),lg2=new THREE.BufferGeometry();lg2.setAttribute('position',new THREE.BufferAttribute(new Float32Array(12),3));
+const lines2=new THREE.LineSegments(lg2,lm2);world2.add(lines2);lines2.visible=false;
+[ord2,led2].forEach(g=>{g.userData.sh.renderOrder=3;g.userData.sh.material.depthTest=false;g.children[1].renderOrder=4;g.children[1].material.depthTest=false;});
+const SEG=40;
+const bars=[0,1].map(()=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(new Float32Array((SEG+1)*2*3),3));
+  const idx=[];for(let i=0;i<SEG;i++){const a=i*2;idx.push(a,a+1,a+2,a+1,a+3,a+2)}g.setIndex(idx);
+  const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:0x1f7a5a,transparent:true,opacity:0,depthTest:false,side:THREE.DoubleSide}));m.renderOrder=2;m.frustumCulled=false;world2.add(m);return m});
+const dotT=tex(64,64,(c,w,h)=>{c.beginPath();c.arc(w/2,h/2,26,0,7);c.fillStyle='#fff';c.fill();c.lineWidth=9;c.strokeStyle='#1f7a5a';c.stroke()});
+const ends=[0,1,2,3].map(()=>{const d=plane(dotT,.11,.11);d.material.depthTest=false;d.renderOrder=5;world2.add(d);return d});
+const _v=new THREE.Vector3();
+function edge(obj,lx,ly){_v.set(lx,ly,0);obj.localToWorld(_v);world2.worldToLocal(_v);return _v.clone()}
+function curve(m,A,B,w){const P=m.geometry.attributes.position.array,dx=B.x-A.x;
+  const c1={x:A.x+dx*.55,y:A.y},c2={x:B.x-dx*.55,y:B.y};let prev=null;
+  for(let i=0;i<=SEG;i++){const t=i/SEG,u=1-t;
+    const x=u*u*u*A.x+3*u*u*t*c1.x+3*u*t*t*c2.x+t*t*t*B.x,y=u*u*u*A.y+3*u*u*t*c1.y+3*u*t*t*c2.y+t*t*t*B.y,z=A.z+(B.z-A.z)*t;
+    const tx=3*u*u*(c1.x-A.x)+6*u*t*(c2.x-c1.x)+3*t*t*(B.x-c2.x),ty=3*u*u*(c1.y-A.y)+6*u*t*(c2.y-c1.y)+3*t*t*(B.y-c2.y),L=Math.hypot(tx,ty)||1,nx=-ty/L*w/2,ny=tx/L*w/2;
+    P.set([x+nx,y+ny,z,x-nx,y-ny,z],i*6)}
+  m.geometry.attributes.position.needsUpdate=true}
+const HID=[0,-.4,-1.5,0,0,0,.35,0];
+const K2={
+ r:[HID,[-.2,-.5,-.4,.15,.2,0,.4,0],[1.05,.05,.3,0,-.18,.05,.7,1],[-.55,0,.85,0,.12,0,1.0,1],[-1.25,0,0,0,.28,0,.78,1],[-1.3,0,-1,0,.28,0,.6,0],HID,HID,HID,HID],
+ o:[HID,HID,HID,[.6,1.4,-2,0,0,0,.5,0],[.62,1.05,-.2,0,-.15,0,.78,1],[.9,1.2,-1.5,0,0,0,.6,0],HID,HID,HID,HID],
+ l:[HID,HID,HID,[.6,-1.4,-2,0,0,0,.5,0],[.62,-.95,0,0,-.2,0,.78,1],[.9,-1.2,-1.5,0,0,0,.6,0],HID,HID,HID,HID]};
+function ap(o,s){o.position.set(s[0],s[1],s[2]);o.rotation.set(s[3],s[4],s[5]);o.scale.setScalar(s[6]);o.visible=s[7]>.01;
+  o.traverse(x=>{if(x.material){x.material.opacity=s[7]*(x===o.userData.sh?.9:1)}})}
+let offX2=0;
+function resize2(){r2.setSize(W,H,false);cam2.aspect=W/H;cam2.updateProjectionMatrix();const halfW=Math.tan(19*Math.PI/180)*7*W/H;
+  offX2=narrow?-.1:halfW*.3;world2.position.y=narrow?1.25:0;world2.scale.setScalar(narrow?Math.min(.9,W/H*.98):Math.min(1,halfW/4.4));}
+function frame2(t,p){
+  const m=Math.max(0,Math.min(1,(p-1.35)/.55,(4.75-p)/.55));veil.style.opacity=m.toFixed(3);cv2.style.opacity=m.toFixed(3);
+  if(m<.01){return}
+  world2.position.x+=(offX2-world2.position.x)*.12;
+  const rs=S(K2.r,p);if(!reduce){rs[4]+=Math.sin(t*.5)*.06;rs[1]+=Math.sin(t*.8)*.03}ap(bigR,rs);
+  hlM.material.opacity=Math.max(near(p,3,.7),near(p,4,.7)*.5)*(.75+.25*Math.sin(t*3))*rs[7];hlM.visible=hlM.material.opacity>.01;
+  scM.material.opacity=near(p,3,.7);scM.visible=scM.material.opacity>.01;scM.position.y=reduce?0:Math.sin(t*1.6)*RH*.45;
+  const os=S(K2.o,p),ls=S(K2.l,p);if(!reduce){os[1]+=Math.sin(t*.9)*.03;ls[1]+=Math.sin(t*.9+2)*.03}ap(ord2,os);ap(led2,ls);
+  const o2=near(p,2,.6);hub2.visible=o2>.01;hub2.position.set(bigR.position.x,bigR.position.y,bigR.position.z-.4);hub2.scale.setScalar(.6+o2*.02);
+  RINGS.forEach(R=>{R.core.material.opacity=o2*.85;R.halo.material.opacity=o2*.22;const a=R.ph+(reduce?0:t*R.sp);
+    const v=new THREE.Vector3(Math.cos(a)*R.r,Math.sin(a)*R.r,0);v.x*=1.2;v.applyEuler(R.g.rotation);R.ball.position.copy(v);R.ball.material.opacity=o2;});
+  NODES.forEach(N=>{N.m.material.opacity=o2;N.m.position.set(N.pos[0]*(.85+.15*o2),N.pos[1]+(reduce?0:Math.sin(t*1.1+N.i)*.04),.6);});
+  chips2.forEach((c,i)=>{const o=near(p,c.ch,.6);c.m.visible=o>.01;c.m.material.opacity=o;
+    c.m.position.set(c.pos[0]+(1-o)*.4,c.pos[1]+(reduce?0:Math.sin(t*1.1+i)*.03),c.pos[2]);});
+
+  const lo=near(p,4,.7);bars.forEach(b=>{b.material.opacity=lo*.85;b.visible=lo>.01});ends.forEach(d=>{d.visible=false});
+  if(lo>.01){const a=bigR.position,b=ord2.position,c=led2.position,s=bigR.scale.x,arr=lines2.geometry.attributes.position.array;
+    world2.updateMatrixWorld(true);
+    const r1=edge(rFront,RW/2,RH*.136),r2p=edge(rFront,RW/2,-RH*.17),o1=edge(ord2.children[1],-1,-.02),l1=edge(led2.children[1],-1,-.06);
+    const ri1=edge(rFront,RW/2-.12,RH*.136),ri2=edge(rFront,RW/2-.12,-RH*.17),oi=edge(ord2.children[1],-.88,-.02),li=edge(led2.children[1],-.88,-.06);
+    curve(bars[0],ri1,oi,.03);curve(bars[1],ri2,li,.03);
+    [[r1,.05],[r2p,.05],[o1,-.05],[l1,-.05]].forEach(([q,dx],i)=>ends[i].position.set(q.x+dx,q.y,q.z+.02));}
+  r2.render(sc2,cam2);
+}
+
+let W=1,H=1,narrow=false;
+function resize(){W=innerWidth;H=innerHeight;narrow=W<=900;renderer.setSize(W,H,false);resize2();measure()}
+addEventListener('resize',resize);resize();
+const v3=new THREE.Vector3(),clock=new THREE.Clock();
+function frame(){
+  const t=clock.getElapsedTime();cur+=(target-cur)*(reduce?1:.07);const p=cur;
+  // camera
+  const c=S(CAM,p),az=c[4]*Math.PI/180+(reduce?0:Math.sin(t*.12)*.03),el=.62,R=40;
+  const asp=W/H,vh=(narrow?17:13.5)/c[3];
+  cam.left=-vh*asp/2;cam.right=vh*asp/2;cam.top=vh/2;cam.bottom=-vh/2;
+  cam.position.set(c[0]+R*Math.cos(el)*Math.sin(az),c[1]+R*Math.sin(el),c[2]+R*Math.cos(el)*Math.cos(az));cam.lookAt(c[0],c[1],c[2]);
+  if(narrow)cam.setViewOffset(W,H,0,Math.round(H*.2),W,H);else cam.setViewOffset(W,H,-Math.round(Math.min(230,W*.17)),0,W,H);
+  cam.updateProjectionMatrix();
+  // dusk at step 7
+  const n=near(p,7,1.1);document.getElementById('night').style.opacity=(n*.82).toFixed(3);
+  hemi.intensity=.72-.42*n;sun.intensity=1-.78*n;winMat.emissiveIntensity=n*1.2;shopLight.intensity=n*2.2;lampMats.forEach(m=>m.emissiveIntensity=n*1.6);lampLights.forEach(L=>L.intensity=n*1.6);
+  // step 1: coin customer → bank, phone glow
+  const s1=near(p,1,.8);phone.material.emissiveIntensity=Math.max(s1,near(p,2,.8))*1.2;
+  const cp=reduce?.5:(t*.45)%1;coin.visible=s1>.05;coin.position.set(-3.2+(5.3+3.2)*cp,1.4+Math.sin(cp*Math.PI)*2.6,2.2-(2.2+2.2)*cp);coin.rotation.z=t*4;coin.scale.setScalar(s1);
+  // receipt path
+  const r=S(RC,p);receipt.position.set(r[0],r[1]+(reduce?0:Math.sin(t*1.6)*.05),r[2]);receipt.material.opacity=r[3];receipt.visible=r[3]>.02;
+  const s3=near(p,3,.7)*0;scan.visible=s3>.05;scan.material.opacity=s3;scan.position.set(receipt.position.x,receipt.position.y+(reduce?0:Math.sin(t*2.4)*.55),receipt.position.z+.05);
+  tgIcon.position.set(-1.6,2.55+(reduce?0:Math.sin(t*1.3)*.08),.9);gfIcon.position.set(0,2.55+(reduce?0:Math.sin(t*1.3+1)*.08),.3);
+  const s2=near(p,8,.8);tgIcon.material.opacity=gfIcon.material.opacity=s2;tgIcon.visible=gfIcon.visible=s2>.02;
+  // GPU + beam
+  const g=Math.max(near(p,3,.7),near(p,8,.8));gpuMat.emissiveIntensity=.3+g*1.2;beam.material.opacity=g;stripe.emissiveIntensity=.35+Math.max(s3,near(p,4,.7))*1.2;
+  // step 4: order + bank cards and links
+  const s4=0;orderCard.position.set(-.4,3.3,-1.8);bankCard.position.set(4.6,3.9,-2.2);
+  [orderCard,bankCard].forEach(o=>{o.material.opacity=s4;o.visible=s4>.02});
+  flagB.position.set(2.2,4.9,-1.4);flagB.material.opacity=s4*(reduce?1:(.5+.5*Math.max(0,Math.sin(t*1.2))));flagB.visible=s4>.02;
+  links.material.opacity=s4*.9;const la=links.geometry.attributes.position.array;
+  la.set([receipt.position.x,receipt.position.y,receipt.position.z,orderCard.position.x,orderCard.position.y,orderCard.position.z,receipt.position.x,receipt.position.y,receipt.position.z,bankCard.position.x,bankCard.position.y,bankCard.position.z]);links.geometry.attributes.position.needsUpdate=true;
+  // step 5 / 6 / 7 badges + rings
+  const s5=near(p,5,.75),s6=near(p,6,.75),s7=near(p,7,.75);
+  cashierOK.position.set(-4.9,3.5,-.85);cashierOK.material.opacity=s5;cashierOK.visible=s5>.02;
+  ownerOK.position.set(-2.3,3.4,-1.2);ownerOK.material.opacity=s6;ownerOK.visible=s6>.02;
+  doneOK.position.set(-3.4,3.1,2.4);doneOK.material.opacity=s7;doneOK.visible=s7>.02;
+  const pulse=reduce?1:(.7+.3*Math.sin(t*3));rCust.material.opacity=Math.max(s1,s7)*pulse;rCash.material.opacity=s5*pulse;rOwn.material.opacity=s6*pulse;
+  // step 7: bag counter → customer
+  const bp=reduce?1:Math.min(1,((t*.35)%1.4));bag.visible=s7>.05;bag.position.set(-4.4+( -3.2+4.4)*bp,1.1+Math.sin(bp*Math.PI)*.6-bp*.1,.1+(2.3-.1)*bp);bag.scale.setScalar(Math.max(.01,s7));
+  // online sellers (ch10)
+  {const so=near(p,10,.75);const a=socLines.geometry.attributes.position.array;
+   SOC.forEach(o=>{o.s.visible=so>.02;o.s.material.opacity=so;o.s.position.set(o.pos[0],o.pos[1]+(reduce?0:Math.sin(t*1.2+o.i*1.3)*.1)+(1-so)*.6,o.pos[2]);
+     a.set([o.s.position.x,o.s.position.y-.5,o.s.position.z,-3.4,1.9,2.4],o.i*6);});
+   socLines.geometry.attributes.position.needsUpdate=true;socLines.computeLineDistances();socLines.material.opacity=so*.8;socLines.visible=so>.02;
+   rCust.material.opacity=Math.max(rCust.material.opacity,so*(reduce?1:(.7+.3*Math.sin(t*3))));phone.material.emissiveIntensity=Math.max(phone.material.emissiveIntensity,so*1.2);}
+  // car drives
+  {const L0=-7.9,L1=7.9,ph=reduce?.75:((t*.07)%1),x=L0+(L1-L0)*ph;car.position.x=x;const k=Math.max(0,Math.min(1,(x-L0)/.9,(L1-x)/.9));car.scale.set(k,k,k);car.visible=k>.01;}
+  // labels
+  labels.forEach(L=>{let o=0;L.ch.forEach(ch=>o=Math.max(o,near(p,ch,.7)));
+    if(o<.02){L.el.style.opacity=0;if(L.st)L.st.style.opacity=0;return}
+    v3.copy(L.pos).project(cam);let x=(v3.x*.5+.5)*W,y=(-v3.y*.5+.5)*H;
+    if(L.off&&W>=900){const f=near(p,8,.7),k=Math.min(1,W/1280),dx=L.off[0]*k*f,dy=L.off[1]*k*f;
+      if(!L.st){L.st=document.createElement('div');L.st.className='stem';LBL.appendChild(L.st)}
+      const tx=x+dx,ty=y+dy+(dy>0?0:0),len=Math.hypot(dx,dy);
+      L.st.style.width=len.toFixed(1)+'px';L.st.style.opacity=(f>.05?o:0).toFixed(2);L.st.style.transform=`translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${Math.atan2(dy,dx)}rad)`;
+      x=tx;y=ty;}
+    L.el.style.opacity=o.toFixed(2);L.el.style.transform=`translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,${L.off&&W>=900&&L.off[1]>0&&near(p,8,.7)>.5?'0%':'-100%'})`;});
+  renderer.render(scene,cam);frame2(t,p);requestAnimationFrame(frame);
+}
+const go=()=>{measure();cur=target;frame()};
+(document.fonts&&document.fonts.ready?Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]):Promise.resolve()).then(go);
+})();
+</script>
+
+</body></html>
