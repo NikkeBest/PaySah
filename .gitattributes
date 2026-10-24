@@ -1,2 +1,7 @@
 # Migration checksums depend on exact bytes, including existing line endings.
 src/db/migrations/*.sql -text
+
+# Preserve PDF offsets and original screenshot bytes.
+*.pdf binary
+*.png binary
+*.jpg binary
