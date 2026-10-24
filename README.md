@@ -2,14 +2,14 @@
 
 Receipt verification for Malaysian small businesses: compare receipt details with independent bank evidence before confirming payment or releasing goods.
 
-## Team
+## Team Information
 
 | Field | Details |
 | --- | --- |
 | Team name | UTeMkuCemerlang |
 | Team domain | Domain 2 — Orbyte Smart SME Challenge |
 | SDG alignment | SDG 8.3 — support micro and small enterprises |
-| Team Leader | Chong Kai Li|
+| Team Leader | Chong Kai Li |
 | University | Universiti Teknikal Malaysia Melaka (UTeM) |
 | Number of Members | 4 |
 
@@ -18,14 +18,34 @@ Receipt verification for Malaysian small businesses: compare receipt details wit
 - [Live demo](https://paysah.replit.app/#orders)
 - [GitHub repository](https://github.com/UTeMkuCemerlang/PaySah)
 - Public pitch video: pending completion.
-- [Slide deck](PaySah-Town.pdf)
+- [Slide deck](submission/PaySah-Town.pdf)
 - [Submission files and remaining items](submission/README.md)
 
-## What it does
+## Overview
+
+### Problem and solution
 
 Small merchants receive transfer screenshots but still need to establish whether money arrived. PaySah extracts receipt fields, checks explainable rules against independent bank records, and keeps human payment and release decisions separate. Cashier and Owner permissions, duplicate evidence detection and activity records support review.
 
 The public prototype uses synthetic customers, receipts and bank credits. It does not connect to a real bank or move money. Screenshots alone never establish payment. Partial or invalid evidence stays blocked; clean payments above RM500 require Owner approval.
+
+### Key features
+
+- Receive receipts through dashboard upload, Telegram or an order-linked Google Form.
+- Extract receipt fields and compare amounts, recipient, status, references and duplicate evidence with independent bank records.
+- Keep payment confirmation and release as separate, permission-controlled decisions.
+- Record evidence provenance, exceptions and human actions in the activity history.
+
+## Tech Stack
+
+| Layer | Technology |
+| --- | --- |
+| Frontend | React, TypeScript, Vite; Three.js for the product story |
+| Backend | Node.js, Express, persistent receipt worker |
+| Database | PostgreSQL |
+| Receipt extraction | RunPod vLLM / Qwen2.5-VL-7B-Instruct; Tesseract CPU fallback |
+| Hosting and storage | Replit deployment and private App Storage |
+| Intake integrations | Telegram and Google Forms / Apps Script |
 
 ## Project structure
 
@@ -53,7 +73,13 @@ LICENSE                      Apache License 2.0
 .gitignore                   Excludes credentials, build output and local records
 ```
 
-The two formal PDFs will be added to submission/ when finalized. The organizer template also lists a Replit proof-of-use PDF and a RunPod proof-of-use PDF; the [RunPod proof PDF](submission/SDC2026_UTeMkuCemerlang_Runpod_POU.pdf) is now included. The [Replit proof PDF](submission/SDC2026_UTeMkuCemerlang_Replit_POU.pdf) is also included.
+Submission documents: [preliminary proposal](submission/SDC2026_UTeMkuCemerlang_Preliminary.pdf), [technical tools declaration](submission/SDC2026_UTeMkuCemerlang_TechDeclaration_final.pdf), [Replit proof](submission/SDC2026_UTeMkuCemerlang_Replit_POU.pdf) and [RunPod proof](submission/SDC2026_UTeMkuCemerlang_Runpod_POU.pdf).
+
+## Architecture
+
+Receipt upload or channel intake → Express API and private image storage → persistent extraction worker → RunPod vision model or CPU fallback → server-side verification against orders and bank evidence → Cashier / Owner review → separate confirmation and release → activity log.
+
+PostgreSQL stores orders, receipt fields, jobs and audit records. Server-side identity, tenant and permission checks protect business operations. The demonstration bank feed is synthetic.
 
 ## How to run
 
@@ -96,12 +122,26 @@ Set EXTRACTOR_MODE=runpod and configure RUNPOD_API_KEY, RUNPOD_ENDPOINT_ID and R
 
 Reviewed screenshots are in [submission/runpod](submission/runpod/). Their dates and limitations are listed in the submission index. Historical balances are not current quotations.
 
+The deployed endpoint/model identification is shown in the [RunPod proof PDF](submission/SDC2026_UTeMkuCemerlang_Runpod_POU.pdf). The authenticated endpoint is called by the server; the public demo requires no RunPod API key from reviewers.
+
 ## Current source
 
 The source includes the V4 interface, Owner-only demo reset, 180-second receipt-worker lease, English Telegram acknowledgements and their regression tests. See [demo operations](src/docs/DEMO_OPERATIONS.md). Reset deletes the selected demo shop's history; save proof first.
 
+Telegram and Google Form intake each completed a real end-to-end test on 24 October 2026. These two runs used CPU fallback after GPU extraction timed out; they do not establish GPU success or replay reliability. Telegram accepts allowlisted team accounts only. Other accounts are ignored by design; reviewers can use the Google Form link generated on an order page instead.
+
+## Challenges and Learnings
+
+Independent bank evidence is the main integration constraint, so the prototype uses synthetic credits. GPU cold starts can delay extraction; a persistent worker and CPU fallback preserve the review flow and record which provider actually returned the fields. Receipt extraction alone cannot establish that money arrived.
+
+## Future Improvements
+
+- Add authorized bank-statement ingestion and evaluate reconciliation with merchant data.
+- Improve GPU cold-start latency and measure extraction quality across more receipt formats.
+- Expand channel replay testing and validate the workflow with small merchants.
+
 ## Submission status and license
 
-The formal proposal, technical declaration and public pitch video are still being finalized. This repository is not represented as a complete competition submission. [The organizer's template](https://github.com/michaelzhngg/SDC_Hackathon_Submission_Template) defines the required documents.
+The proposal, technical declaration, slide deck and both platform proof PDFs are included. The public pitch video link is still pending. Uploaded documents have not been certified here for signature/date completeness; designated collaborator access also remains to be checked. [The organizer's template](https://github.com/michaelzhngg/SDC_Hackathon_Submission_Template) defines the submission format.
 
-Licensed under [Apache-2.0](LICENSE). Third-party packages retain their own licenses. Development-tool disclosures remain in [the source declaration](src/submission/TOOLS_DECLARATION.md) until the official technical declaration is finalized.
+Licensed under [Apache-2.0](LICENSE). Third-party packages retain their own licenses. See the [technical tools declaration](submission/SDC2026_UTeMkuCemerlang_TechDeclaration_final.pdf) and supporting [source disclosure](src/submission/TOOLS_DECLARATION.md).

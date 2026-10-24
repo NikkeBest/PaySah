@@ -4,15 +4,16 @@ Team: **UTeMkuCemerlang**. Domain: **Domain 2 — Orbyte Smart SME Challenge**.
 
 | Required material | Intended filename / location | Status |
 | --- | --- | --- |
-| Preliminary proposal | SDC2026_UTeMkuCemerlang_Preliminary.pdf | Final PDF pending |
-| Technical tools declaration | SDC2026_UTeMkuCemerlang_TechDeclaration.pdf | Final PDF pending |
+| Preliminary proposal | [SDC2026_UTeMkuCemerlang_Preliminary.pdf](SDC2026_UTeMkuCemerlang_Preliminary.pdf) | Uploaded by team |
+| Technical tools declaration | [SDC2026_UTeMkuCemerlang_TechDeclaration_final.pdf](SDC2026_UTeMkuCemerlang_TechDeclaration_final.pdf) | Uploaded by team; filename retains team's _final suffix |
+| Slide deck | [PaySah-Town.pdf](PaySah-Town.pdf) | Uploaded by team |
 | Replit screenshots | replit/ | Included |
 | RunPod screenshots | runpod/ | Included |
 | Replit proof of use | [SDC2026_UTeMkuCemerlang_Replit_POU.pdf](SDC2026_UTeMkuCemerlang_Replit_POU.pdf) | Completed: four-page screenshot evidence |
 | RunPod proof of use | [SDC2026_UTeMkuCemerlang_Runpod_POU.pdf](SDC2026_UTeMkuCemerlang_Runpod_POU.pdf) | Completed: five-page screenshot evidence |
 | Public pitch video | Link in root README.md | Pending |
 
-Only finalized PDFs should be added under the filenames above. Blank template PDFs are not completed team submissions. Complete required signatures and dates before exporting; do not invent them.
+The organizer's example names the declaration SDC2026_TeamName_TechDeclaration.pdf; the team's uploaded file currently retains an additional _final suffix. Verify required signatures and dates before submission. Upload status alone does not certify document completeness.
 
 ## Screenshot provenance
 
@@ -21,7 +22,7 @@ Only finalized PDFs should be added under the filenames above. Blank template PD
 - runpod/01-metrics-requests-2026-10-23.png: supplied RunPod metrics screenshot, 79 total requests, 77 completed and 2 failed in the displayed selection. These are provider request counts, not a model accuracy score.
 - runpod/02-billing-balance-2026-10-23.png: supplied historical account balance/usage screenshot. No payment card data is shown. This is not current pricing or remaining credit.
 
-The original reviewed screenshot pixels are preserved. No fabricated provider dashboards or generated evidence are included. Add platform project/endpoint identification and required explanations to the official proof documents before final submission.
+The original reviewed screenshot pixels are preserved. Both platform proof PDFs include screenshots and explanatory captions.
 
 RunPod evidence update (24 October 2026): the linked PDF contains five unaltered team-supplied screenshots covering endpoint/model, metrics, worker, deployment list and account usage. Originals are in runpod/2026-10-24/. The displayed 110 requests (100 completed, 10 failed) and USD 24.17 balance are historical dashboard values.
 
