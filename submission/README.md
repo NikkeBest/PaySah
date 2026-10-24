@@ -8,7 +8,7 @@ Team: **UTeMkuCemerlang**. Domain: **Domain 2 — Orbyte Smart SME Challenge**.
 | Technical tools declaration | SDC2026_UTeMkuCemerlang_TechDeclaration.pdf | Final PDF pending |
 | Replit screenshots | replit/ | Included |
 | RunPod screenshots | runpod/ | Included |
-| Replit proof of use | SDC2026_UTeMkuCemerlang_Replit_POU.pdf | Required by linked template; not yet assembled |
+| Replit proof of use | [SDC2026_UTeMkuCemerlang_Replit_POU.pdf](SDC2026_UTeMkuCemerlang_Replit_POU.pdf) | Completed: four-page screenshot evidence |
 | RunPod proof of use | [SDC2026_UTeMkuCemerlang_Runpod_POU.pdf](SDC2026_UTeMkuCemerlang_Runpod_POU.pdf) | Completed: five-page screenshot evidence |
 | Public pitch video | Link in root README.md | Pending |
 
@@ -24,3 +24,5 @@ Only finalized PDFs should be added under the filenames above. Blank template PD
 The original reviewed screenshot pixels are preserved. No fabricated provider dashboards or generated evidence are included. Add platform project/endpoint identification and required explanations to the official proof documents before final submission.
 
 RunPod evidence update (24 October 2026): the linked PDF contains five unaltered team-supplied screenshots covering endpoint/model, metrics, worker, deployment list and account usage. Originals are in runpod/2026-10-24/. The displayed 110 requests (100 completed, 10 failed) and USD 24.17 balance are historical dashboard values.
+
+Replit evidence update (24 October 2026): four original screenshots show the live domain, publishing workflow, workspace preview and account usage. Original files are in replit/2026-10-24/. The publishing-progress screenshot does not establish that its Promote stage completed; the usage filter is All workspaces.

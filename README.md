@@ -50,7 +50,7 @@ LICENSE                      Apache License 2.0
 .gitignore                   Excludes credentials, build output and local records
 ```
 
-The two formal PDFs will be added to submission/ when finalized. The organizer template also lists a Replit proof-of-use PDF and a RunPod proof-of-use PDF; the [RunPod proof PDF](submission/SDC2026_UTeMkuCemerlang_Runpod_POU.pdf) is now included. The Replit proof PDF remains pending.
+The two formal PDFs will be added to submission/ when finalized. The organizer template also lists a Replit proof-of-use PDF and a RunPod proof-of-use PDF; the [RunPod proof PDF](submission/SDC2026_UTeMkuCemerlang_Runpod_POU.pdf) is now included. The [Replit proof PDF](submission/SDC2026_UTeMkuCemerlang_Replit_POU.pdf) is also included.
 
 ## How to run
 
