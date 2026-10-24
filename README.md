@@ -9,6 +9,9 @@ Receipt verification for Malaysian small businesses: compare receipt details wit
 | Team name | UTeMkuCemerlang |
 | Team domain | Domain 2 — Orbyte Smart SME Challenge |
 | SDG alignment | SDG 8.3 — support micro and small enterprises |
+| Team Leader | Chong Kai Li|
+| University | Universiti Teknikal Malaysia Melaka (UTeM) |
+| Number of Members | 4 |
 
 ## Links
 
